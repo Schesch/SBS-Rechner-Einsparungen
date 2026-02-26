@@ -13,6 +13,9 @@ import { OutputCard } from './components/OutputCard';
 import logo from '/sbs_business_school.jpg';
 import './App.css';
 
+type WorkshopType = '4h' | '7h';
+const WORKSHOP_COSTS: Record<WorkshopType, number> = { '4h': 2900, '7h': 3900 };
+
 function App() {
   const [employeeCount, setEmployeeCount] = useState(10);
   const [hoursPerWeek, setHoursPerWeek] = useState(40);
@@ -21,6 +24,7 @@ function App() {
   const [wageMode, setWageMode] = useState<WageMode>('monthly');
   const [monthlyGross, setMonthlyGross] = useState(2000);
   const [hourlyWage, setHourlyWage] = useState(20);
+  const [workshopType, setWorkshopType] = useState<WorkshopType>('4h');
 
   const results = useMemo(
     () =>
@@ -176,6 +180,30 @@ function App() {
               variant="highlight"
             />
           </div>
+          <div className="workshop-section">
+            <div className="workshop-toggle">
+              <button
+                className={`toggle-btn ${workshopType === '4h' ? 'toggle-btn--active' : ''}`}
+                onClick={() => setWorkshopType('4h')}
+              >
+                4h Workshop
+              </button>
+              <button
+                className={`toggle-btn ${workshopType === '7h' ? 'toggle-btn--active' : ''}`}
+                onClick={() => setWorkshopType('7h')}
+              >
+                7h Workshop
+              </button>
+            </div>
+            <p className="workshop-result">
+              {results.savedCostPerMonth > 0
+                ? `Die Kosten des Workshops sind in ${Math.ceil(
+                    WORKSHOP_COSTS[workshopType] / (results.savedCostPerMonth / 20)
+                  )} Tagen wieder eingespart.`
+                : 'Bitte Zeitersparnis eingeben, um die Amortisation zu berechnen.'}
+            </p>
+          </div>
+
           <p className="footnote">
             Berechnungsgrundlage: 1 Monat = 4,33 Wochen (52 ÷ 12), 5 Arbeitstage pro Woche
           </p>
