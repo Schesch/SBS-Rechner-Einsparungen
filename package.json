@@ -1,0 +1,14 @@
+{
+  "name": "sbs-ki-rechner",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter ui dev",
+    "build": "pnpm --filter ui build",
+    "test": "pnpm --filter ui test",
+    "lint": "pnpm --filter ui lint",
+    "typecheck": "pnpm --filter ui typecheck",
+    "predist": "pnpm build && cp -r apps/ui/dist apps/desktop/ui-dist",
+    "dist": "pnpm --filter desktop dist"
+  }
+}

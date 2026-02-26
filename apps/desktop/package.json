@@ -1,0 +1,48 @@
+{
+  "name": "desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SBS KI Rechner - Desktop App",
+  "author": "Südtirol Business School",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "build": "tsc -p tsconfig.json",
+    "dist": "pnpm build && electron-builder"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "get-port": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12",
+    "typescript": "~5.9.3"
+  },
+  "build": {
+    "appId": "com.sbs.ki-rechner",
+    "productName": "SBS KI Rechner",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "ui-dist/**/*"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": "nsis",
+      "artifactName": "SBS-KI-Rechner-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    },
+    "mac": {
+      "target": "dmg",
+      "artifactName": "SBS-KI-Rechner.${ext}",
+      "category": "public.app-category.business"
+    }
+  }
+}
