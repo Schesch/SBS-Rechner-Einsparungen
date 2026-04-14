@@ -1,81 +1,62 @@
 #!/bin/bash
 # SBS KI Rechner — Startscript für macOS
 # Doppelklick auf diese Datei um den Rechner zu starten.
+# Benötigt: python3 (auf jedem Mac seit macOS 10.15 vorinstalliert)
 
 cd "$(dirname "$0")"
+
+# Quarantäne-Attribut entfernen + Execute-Permission setzen (selbstheilend für ZIP-Downloads)
+xattr -d com.apple.quarantine "$0" 2>/dev/null || true
+chmod +x "$0" 2>/dev/null || true
 
 echo "========================================="
 echo "  SBS KI Rechner — wird gestartet..."
 echo "========================================="
 echo ""
 
-# Quarantäne-Attribut entfernen (behebt macOS Gatekeeper-Warnung bei zukünftigen Starts)
-if command -v xattr &> /dev/null; then
-    xattr -d com.apple.quarantine "$0" 2>/dev/null || true
-fi
-
-# Execute-Permission sicherstellen (selbstheilend für ZIP-Downloads)
-chmod +x "$0" 2>/dev/null || true
-
-# PATH erweitern: Homebrew (Intel + Apple Silicon) und nvm
-export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-if [ -d "$HOME/.nvm/versions/node" ]; then
-    NVM_NODE=$(ls "$HOME/.nvm/versions/node" 2>/dev/null | sort -V | tail -1)
-    if [ -n "$NVM_NODE" ]; then
-        export PATH="$HOME/.nvm/versions/node/$NVM_NODE/bin:$PATH"
-    fi
-fi
-
-# Node.js prüfen
-if ! command -v node &> /dev/null; then
-    echo "❌ Node.js ist nicht installiert!"
-    echo ""
-    echo "Bitte installiere Node.js:"
-    echo "  1. Gehe zu https://nodejs.org"
-    echo "  2. Lade die LTS-Version herunter"
-    echo "  3. Installiere und starte dieses Script erneut"
+# Prüfe ob der vorgebaute UI-Ordner existiert
+if [ ! -f "apps/ui/dist/index.html" ]; then
+    echo "❌ Die Anwendungsdateien fehlen (apps/ui/dist/)."
+    echo "   Bitte lade das Repository erneut herunter."
     echo ""
     echo "Drücke Enter zum Schließen..."
     read
     exit 1
 fi
 
-echo "✅ Node.js gefunden: $(node --version)"
-
-# pnpm prüfen, bei Bedarf installieren
-if ! command -v pnpm &> /dev/null; then
-    echo "⏳ pnpm wird installiert..."
-    npm install -g pnpm
-    if [ $? -ne 0 ]; then
-        echo "❌ pnpm konnte nicht installiert werden."
-        echo "   Versuche: npm install -g pnpm"
-        echo ""
-        echo "Drücke Enter zum Schließen..."
-        read
-        exit 1
-    fi
-fi
-
-echo "✅ pnpm gefunden: $(pnpm --version)"
-
-# Dependencies installieren falls nötig (nur UI-Abhängigkeiten, kein Electron)
-if [ ! -d "node_modules" ]; then
+# Python 3 prüfen (vorinstalliert auf macOS seit 10.15 Catalina)
+if ! command -v python3 &> /dev/null; then
+    echo "⚠️  Python 3 wird benötigt."
+    echo "   macOS wird die Installation vorschlagen — bitte bestätigen"
+    echo "   und danach dieses Script erneut starten."
     echo ""
-    echo "⏳ Dependencies werden installiert (erster Start)..."
-    pnpm install --filter ui...
-    if [ $? -ne 0 ]; then
-        echo "❌ Installation fehlgeschlagen."
+    echo "Drücke Enter zum Schließen..."
+    read
+    exit 1
+fi
+
+# Freien Port finden (Standard: 8080)
+PORT=8080
+while lsof -i:$PORT >/dev/null 2>&1; do
+    PORT=$((PORT + 1))
+    if [ $PORT -gt 8100 ]; then
+        echo "❌ Kein freier Port gefunden (8080-8100 belegt)."
         echo ""
         echo "Drücke Enter zum Schließen..."
         read
         exit 1
     fi
-fi
+done
 
+echo "✅ Starte auf http://localhost:$PORT"
 echo ""
-echo "🚀 Starte den Rechner..."
 echo "   Der Browser öffnet sich gleich automatisch."
 echo "   Zum Beenden: dieses Fenster schließen oder Ctrl+C drücken."
 echo ""
 
-pnpm dev
+# Browser nach kurzer Verzögerung öffnen
+(sleep 1 && open "http://localhost:$PORT") &
+
+# Statischen Webserver starten (Python 3 — auf macOS vorinstalliert)
+cd apps/ui/dist
+python3 -m http.server $PORT 2>/dev/null

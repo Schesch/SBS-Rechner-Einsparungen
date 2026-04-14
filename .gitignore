@@ -1,8 +1,14 @@
 node_modules
-dist
-dist-electron
-ui-dist
 .DS_Store
 *.log
 .Rhistory
 .claude/
+
+# Build-Artefakte (Desktop/Electron)
+/dist
+apps/desktop/dist
+dist-electron
+ui-dist
+
+# Pre-built UI wird getrackt — wird fuer den Start ohne Node.js benoetigt
+!apps/ui/dist

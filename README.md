@@ -6,80 +6,40 @@ Ein lokaler Rechner der Südtirol Business School (SBS).
 
 ---
 
-## Voraussetzung: Node.js installieren
+## Schnellstart (3 Schritte)
 
-Falls Node.js noch nicht installiert ist:
+### 1. Repository herunterladen
 
-1. Gehe zu **https://nodejs.org**
-2. Lade die **LTS-Version** herunter
-3. Installiere sie (Standard-Einstellungen reichen)
+Auf der GitHub-Seite den grünen Button **"Code"** klicken → **"Download ZIP"** → ZIP-Datei entpacken.
 
----
+### 2. Rechner starten
 
-## Repository herunterladen
+| Betriebssystem | Datei | Aktion |
+|---|---|---|
+| **macOS** | `start.command` | Doppelklick |
+| **Windows** | `start.bat` | Doppelklick |
 
-### Option A: ZIP-Download (empfohlen für Einsteiger)
+**Das war's!** Der Browser öffnet sich automatisch mit dem Rechner.
 
-1. Auf der GitHub-Seite oben den grünen Button **"Code"** klicken
-2. **"Download ZIP"** wählen
-3. ZIP-Datei entpacken
+> Es wird **keine** Software-Installation benötigt — der Rechner nutzt nur Programme, die bereits auf jedem Computer vorinstalliert sind (Python 3 auf macOS, PowerShell auf Windows).
 
-### Option B: Git Clone (empfohlen für macOS — kein Gatekeeper-Problem)
+### 3. Beenden
 
-```bash
-git clone <repository-url>
-```
+Das Terminal-/Kommandozeilen-Fenster schließen oder `Ctrl+C` drücken.
 
 ---
 
-## Rechner starten
+## macOS: Beim allerersten Öffnen
 
-### macOS
+macOS blockiert möglicherweise das Script beim allerersten Mal. So gehst du vor:
 
-#### Erster Start nach ZIP-Download
+1. **Rechtsklick** auf `start.command`
+2. **"Öffnen"** wählen
+3. Im Dialog **"Öffnen"** bestätigen
 
-Beim ersten Mal nach dem ZIP-Download muss das Script einmalig über Terminal gestartet werden:
+Ab dem zweiten Mal funktioniert ein normaler Doppelklick.
 
-1. **Terminal** öffnen (Spotlight: `Cmd + Leertaste` → "Terminal" eintippen)
-2. Folgenden Befehl eintippen und mit **Enter** bestätigen:
-
-```bash
-bash ~/Downloads/ErsparnisRechner-main/start.command
-```
-
-> **Hinweis:** Falls du den Ordner woanders hin verschoben hast, passe den Pfad entsprechend an.
-
-Ab dem **zweiten Start** kannst du `start.command` per **Doppelklick** öffnen — das Script repariert sich beim ersten Durchlauf selbst.
-
-#### Erster Start nach Git Clone
-
-Bei `git clone` funktioniert **Doppelklick** auf `start.command` sofort. Falls macOS trotzdem warnt: **Rechtsklick** → "Öffnen" → "Öffnen" bestätigen (nur einmalig nötig).
-
-#### Alle weiteren Starts
-
-Einfach **Doppelklick** auf `start.command`.
-
----
-
-### Windows
-
-**Doppelklick** auf `start.bat`.
-
-Falls Windows SmartScreen warnt: **"Weitere Informationen"** → **"Trotzdem ausführen"** klicken.
-
----
-
-## Was passiert beim Start?
-
-Das Script:
-- Installiert automatisch `pnpm` (falls nicht vorhanden)
-- Installiert automatisch die Abhängigkeiten (nur beim ersten Start, dauert ca. 30 Sekunden)
-- Startet den lokalen Server
-- Öffnet den **Browser** mit dem Rechner
-
-## Beenden
-
-Terminal-Fenster schließen oder `Ctrl+C` drücken.
+> Falls "Rechtsklick → Öffnen" nicht funktioniert: **Systemeinstellungen** → **Datenschutz & Sicherheit** → unten bei "start.command wurde blockiert" auf **"Trotzdem öffnen"** klicken.
 
 ---
 
@@ -87,10 +47,24 @@ Terminal-Fenster schließen oder `Ctrl+C` drücken.
 
 | Problem | Lösung |
 |---------|--------|
-| "Node.js ist nicht installiert" | Node.js von https://nodejs.org installieren und Terminal neu starten |
-| Browser öffnet nicht | Im Terminal steht die URL (z.B. `http://127.0.0.1:5173`). Manuell im Browser öffnen |
-| Port belegt | Vite wählt automatisch einen anderen freien Port |
-| macOS: "kann nicht geöffnet werden" / Gatekeeper | Terminal öffnen und `bash start.command` ausführen (siehe oben) |
-| macOS: "Permission denied" | Terminal: `chmod +x start.command` ausführen, dann erneut starten |
-| macOS: Node.js nicht gefunden trotz Installation | Terminal schließen und neu öffnen, damit der PATH aktualisiert wird |
+| macOS: "kann nicht geöffnet werden" | Rechtsklick → Öffnen → Öffnen bestätigen (siehe oben) |
+| macOS: "Permission denied" | Terminal öffnen, eintippen: `chmod +x start.command` |
 | Windows: SmartScreen warnt | "Weitere Informationen" → "Trotzdem ausführen" |
+| Browser öffnet nicht | Im Terminal steht die URL (z.B. `http://localhost:8080`). Manuell im Browser öffnen |
+| Port belegt | Das Script findet automatisch einen freien Port (8080–8100) |
+
+---
+
+## Für Entwickler
+
+Wer den Code ändern möchte, braucht [Node.js](https://nodejs.org) (LTS) und pnpm:
+
+```bash
+pnpm install
+pnpm dev          # Vite Dev-Server mit Hot Reload
+pnpm build        # Neu bauen (apps/ui/dist/)
+pnpm test         # Unit-Tests
+pnpm lint         # ESLint
+```
+
+> **Wichtig:** Nach Code-Änderungen `pnpm build` ausführen und `apps/ui/dist/` committen, damit die Start-Scripts die aktuelle Version verwenden.
