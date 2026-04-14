@@ -45,7 +45,7 @@ REM Dependencies installieren falls nötig
 if not exist "node_modules" (
     echo.
     echo ⏳ Dependencies werden installiert (erster Start^)...
-    call pnpm install
+    call pnpm install --filter ui...
     if %errorlevel% neq 0 (
         echo ❌ Installation fehlgeschlagen.
         echo.

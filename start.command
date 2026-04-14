@@ -9,6 +9,23 @@ echo "  SBS KI Rechner — wird gestartet..."
 echo "========================================="
 echo ""
 
+# Quarantäne-Attribut entfernen (behebt macOS Gatekeeper-Warnung bei zukünftigen Starts)
+if command -v xattr &> /dev/null; then
+    xattr -d com.apple.quarantine "$0" 2>/dev/null || true
+fi
+
+# Execute-Permission sicherstellen (selbstheilend für ZIP-Downloads)
+chmod +x "$0" 2>/dev/null || true
+
+# PATH erweitern: Homebrew (Intel + Apple Silicon) und nvm
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+if [ -d "$HOME/.nvm/versions/node" ]; then
+    NVM_NODE=$(ls "$HOME/.nvm/versions/node" 2>/dev/null | sort -V | tail -1)
+    if [ -n "$NVM_NODE" ]; then
+        export PATH="$HOME/.nvm/versions/node/$NVM_NODE/bin:$PATH"
+    fi
+fi
+
 # Node.js prüfen
 if ! command -v node &> /dev/null; then
     echo "❌ Node.js ist nicht installiert!"
@@ -41,11 +58,11 @@ fi
 
 echo "✅ pnpm gefunden: $(pnpm --version)"
 
-# Dependencies installieren falls nötig
+# Dependencies installieren falls nötig (nur UI-Abhängigkeiten, kein Electron)
 if [ ! -d "node_modules" ]; then
     echo ""
     echo "⏳ Dependencies werden installiert (erster Start)..."
-    pnpm install
+    pnpm install --filter ui...
     if [ $? -ne 0 ]; then
         echo "❌ Installation fehlgeschlagen."
         echo ""
